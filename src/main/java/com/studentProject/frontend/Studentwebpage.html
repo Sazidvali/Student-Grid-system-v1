@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Details</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        function loadStudents() {
+            var page = $("#page").val();
+            var pageSize = $("#pageSize").val();
+
+            $.ajax({
+                url: "/students?page=" + page + "&pageSize=" + pageSize,
+                type: "GET",
+                success: function (data) {
+                    // Process the returned student data and update the UI
+                    var tableBody = $("#studentTable tbody");
+                    tableBody.empty();
+
+                    $.each(data, function (index, student) {
+                        var row = "<tr><td>" + student.id + "</td><td>" + student.name + "</td><td>" + student.totalMarks + "</td></tr>";
+                        tableBody.append(row);
+                    });
+                },
+                error: function () {
+                    alert("Error occurred while loading students.");
+                }
+            });
+        }
+
+        function filterStudents() {
+            var filterName = $("#filterName").val();
+
+            $.ajax({
+                url: "/students/filter",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ "name": filterName }),
+                success: function (data) {
+                    // Process the returned filtered student data and update the UI
+                    var tableBody = $("#studentTable tbody");
+                    tableBody.empty();
+
+                    $.each(data, function (index, student) {
+                        var row = "<tr><td>" + student.id + "</td><td>" + student.name + "</td><td>" + student.totalMarks + "</td></tr>";
+                        tableBody.append(row);
+                    });
+                },
+                error: function () {
+                    alert("Error occurred while filtering students.");
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<h1>Student Details</h1>
+<label for="page">Page:</label>
+<input type="number" id="page" value="1">
+<label for="pageSize">Page Size:</label>
+<input type="number" id="pageSize" value="10">
+<button onclick="loadStudents()">Load Students</button>
+
+<h2>Filter Students</h2>
+<label for="filterName">Name:</label>
+<input type="text" id="filterName">
+<button onclick="filterStudents()">Filter</button>
+
+<table id="studentTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Total Marks</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Student data will be dynamically added here -->
+    </tbody>
+</table>
+</body>
+</html>
